@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.config['MYSQL_DB'] = 'imagecaptcha'
 mysql = MySQL(app)
 
-im = [{'id':'1234', 'name':'tiger', 'url':'abcd'}, {'id':'4567', 'name':'tiger', 'url':'abcd'}]
+#im = [{'id':'1234', 'name':'tiger', 'url':'abcd'}, {'id':'4567', 'name':'tiger', 'url':'abcd'}]
 
 @app.route("/", methods=["GET"])
 def main():
@@ -25,15 +25,21 @@ def returnImage():
 	cur = mysql.connection.cursor()
 	cur.execute('''SELECT * FROM images''')
 	rv = cur.fetchall()
-	return jsonify({'img': im})
-"""	images = []
+	images = []
 	#return jsonify({'message' : 'It works!'})
 	for i in range(0,len(rv)):
 		id,name,url = rv[i] 
-		obj = {'id' : val, 'name' : name, 'url' : url}
+		obj = {}
+		obj['id'] = str(id)
+		obj['name'] = str(name)
+		obj['url'] = str(url)
 		images.append(obj)
+		'''
+		images[i] = obj
 		print images
-		print rv[i]"""
+		'''
+		print str(id) + str(name) + str(url)
+	return jsonify({'img':images})
 
 @app.route('/image/<string:name>', methods=['GET'])
 def returnType(name):
