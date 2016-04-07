@@ -9,7 +9,11 @@ Install the dependencies as:
 
 If you encounter error installing `flask-mysqldb` install`libmysqlclient-dev` first.
 
-`PIL` i.e Python Imaging Library is used to save dynamic images. 
+> `PIL` i.e Python Imaging Library is used to save dynamic images.
+
+Run a microserver on a `port` so that the new processed image can be accessed.
+
+		python -m SimpleHTTPServer 5500 #Default taken
 
 References:
 

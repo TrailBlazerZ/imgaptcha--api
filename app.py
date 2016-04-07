@@ -2,9 +2,9 @@ from flask import Flask, jsonify, request
 from flask.ext.mysqldb import MySQL
 import cv2
 import numpy as np
-from imgprocess import imgproc
+from imgprocess import imgprocs, imgprocl
 import urllib
-
+from random import randint
 
 app = Flask(__name__)
 
@@ -68,15 +68,56 @@ def returnType(nname):
 def returnProcImg(iid):
 	cur = mysql.connection.cursor()
 	sql = "SELECT * FROM images \
-		    WHERE id LIKE '%s'" % (iid)
+	 	    WHERE id LIKE '%s'" % (iid)
 	cur.execute(sql)
 	rv = cur.fetchall()
 	id,name,url = rv[0]
 	print (id,name,url)
-	imgproc(str(url),iid)
-	#cv2.imwrite(str(id)+".png", procimg)
-	return jsonify({'message' : 'It works!'})
-
+	# query = "SELECT * FROM imgprocess \
+	# 		WHERE id LIKE '%s'" % (iid)
+	# img = []
+	# try:
+	# 	print ("2")
+	# 	cur.execute(query)
+	# 	rvi = cur.fetchall()
+	# 	obj = {}
+	# 	# get the processed id and url from the table
+	# 	idp, urlp = rvi[0]
+	# 	obj['id'] = str(idp)
+	# 	obj['url'] = str(urlp)
+	# 	img.append(obj)
+	# 	return jsonify({'res' : img})
+	# except:
+	# 	#sobel
+	# 	#imgprocs(str(url),iid) 
+	# 	#laplacian
+	# 	print ("1")
+	# 	new_url = "http://localhost:5000/cgi/" + str(id) + ".png" 
+	# 	print (str(new_url))
+	# 	print (str(url))
+	# 	imgprocl(str(url),id)
+	# 	query = "INSERT INTO imgprocess \
+	# 			VALUES ('%s', '%s')" % (str(id), str(new_url))
+	# 	cur.execute(query)
+	# 	connection.commit()
+	# 	img = []
+	# 	obj = {}
+	#Adding randomization in filters
+	if (randint(0,1) == 1):
+		imgprocl(str(url),id)
+	else:
+		imgprocs(str(url),id)
+	img = []
+	obj = {}
+	port = "5500"
+	#new_url = "http://localhost:5000/" + "cgi/" + str(id) + ".png"
+	new_url = "http://localhost:" + str(port) + "/" + str(id) + ".png"
+	obj['id'] = str(id)
+	obj['url'] = str(new_url)
+	img.append(obj)
+	cur.close()
+	return jsonify({'res' : img})
+		#return jsonify({'message' : 'It works!'})
 
 
 if __name__ == "__main__":
