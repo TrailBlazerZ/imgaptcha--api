@@ -1,9 +1,15 @@
 from flask import Flask, jsonify, request
 from flask.ext.mysqldb import MySQL
+import cv2
+import numpy as np
+from imgprocess import imgproc
+import urllib
+
 
 app = Flask(__name__)
 
 #app.config['MYSQL_HOST'/'MYSQL_USER'/'MYSQL_PASSWORD'] are set to default
+
 app.config['MYSQL_DB'] = 'imagecaptcha'
 mysql = MySQL(app)
 
@@ -57,6 +63,21 @@ def returnType(nname):
 		images.append(obj)
 	img = [image for image in images if image['name'] == nname]
 	return jsonify({'res' : img})
+
+@app.route('/procid/<string:iid>', methods=['GET','POST'])
+def returnProcImg(iid):
+	cur = mysql.connection.cursor()
+	sql = "SELECT * FROM images \
+		    WHERE id LIKE '%s'" % (iid)
+	cur.execute(sql)
+	rv = cur.fetchall()
+	id,name,url = rv[0]
+	print (id,name,url)
+	imgproc(str(url),iid)
+	#cv2.imwrite(str(id)+".png", procimg)
+	return jsonify({'message' : 'It works!'})
+
+
 
 if __name__ == "__main__":
 	app.run()
