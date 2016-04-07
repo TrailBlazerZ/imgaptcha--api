@@ -41,9 +41,21 @@ def returnImage():
 		print str(id) + str(name) + str(url)
 	return jsonify({'img':images})
 
-@app.route('/image/<string:name>', methods=['GET'])
-def returnType(name):
-	img = [image for image in images if image['name'] == name]
+@app.route('/image/<string:nname>', methods=['GET'])
+def returnType(nname):
+	cur = mysql.connection.cursor()
+	cur.execute('''SELECT * FROM images''')
+	rv = cur.fetchall()
+	images = []
+	#return jsonify({'message' : 'It works!'})
+	for i in range(0,len(rv)):
+		id,name,url = rv[i]
+		obj = {}
+		obj['id'] = str(id)
+		obj['name'] = str(name)
+		obj['url'] = str(url)
+		images.append(obj)
+	img = [image for image in images if image['name'] == nname]
 	return jsonify({'res' : img})
 
 if __name__ == "__main__":
